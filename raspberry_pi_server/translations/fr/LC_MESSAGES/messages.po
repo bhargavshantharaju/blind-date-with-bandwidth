@@ -1,0 +1,64 @@
+# French translations
+# fr.po for Blind Date with Bandwidth
+
+msgid ""
+msgstr ""
+"Language: fr\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "Blind Date with Bandwidth"
+msgstr "Rendez-vous Aveugle avec Bande Passante"
+
+msgid "Match on Random Tracks"
+msgstr "Synchronisation sur des Pistes Aléatoires"
+
+msgid "Select your track"
+msgstr "Sélectionnez votre piste"
+
+msgid "Waiting for match..."
+msgstr "En attente de correspondance..."
+
+msgid "Match found!"
+msgstr "Correspondance trouvée!"
+
+msgid "No match :("
+msgstr "Pas de correspondance :("
+
+msgid "Session timeout"
+msgstr "Session expirée"
+
+msgid "Sync time"
+msgstr "Temps de synchronisation"
+
+msgid "ms"
+msgstr "ms"
+
+msgid "Station"
+msgstr "Station"
+
+msgid "Leaderboard"
+msgstr "Classement"
+
+msgid "Tournament"
+msgstr "Tournoi"
+
+msgid "Round"
+msgstr "Manche"
+
+msgid "Winner"
+msgstr "Gagnant"
+
+msgid "Electric Pulse"
+msgstr "Impulsion Électrique"
+
+msgid "Cosmic Journey"
+msgstr "Voyage Cosmique"
+
+msgid "Urban Rhythm"
+msgstr "Rythme Urbain"
+
+msgid "Ethereal Waves"
+msgstr "Ondes Éthérées"
+
+msgid "Retro Synth"
+msgstr "Synthé Rétro"

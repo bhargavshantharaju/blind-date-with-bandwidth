@@ -1,0 +1,64 @@
+# Spanish translations
+# es.po for Blind Date with Bandwidth
+
+msgid ""
+msgstr ""
+"Language: es\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "Blind Date with Bandwidth"
+msgstr "Cita Ciega con Ancho de Banda"
+
+msgid "Match on Random Tracks"
+msgstr "Sincronización en Pistas Aleatorias"
+
+msgid "Select your track"
+msgstr "Selecciona tu pista"
+
+msgid "Waiting for match..."
+msgstr "Esperando coincidencia..."
+
+msgid "Match found!"
+msgstr "¡Coincidencia encontrada!"
+
+msgid "No match :("
+msgstr "Sin coincidencia :("
+
+msgid "Session timeout"
+msgstr "Sesión agotada"
+
+msgid "Sync time"
+msgstr "Tiempo de sincronización"
+
+msgid "ms"
+msgstr "ms"
+
+msgid "Station"
+msgstr "Estación"
+
+msgid "Leaderboard"
+msgstr "Tabla de clasificación"
+
+msgid "Tournament"
+msgstr "Torneo"
+
+msgid "Round"
+msgstr "Ronda"
+
+msgid "Winner"
+msgstr "Ganador"
+
+msgid "Electric Pulse"
+msgstr "Pulso Eléctrico"
+
+msgid "Cosmic Journey"
+msgstr "Viaje Cósmico"
+
+msgid "Urban Rhythm"
+msgstr "Ritmo Urbano"
+
+msgid "Ethereal Waves"
+msgstr "Ondas Etéreas"
+
+msgid "Retro Synth"
+msgstr "Sintetizador Retro"
