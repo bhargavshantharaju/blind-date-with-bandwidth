@@ -1,0 +1,64 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  python-lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+    - name: Install dependencies
+      run: |
+        cd raspberry_pi_server
+        python -m pip install --upgrade pip
+        pip install flake8 black pytest
+    - name: Lint with flake8
+      run: |
+        cd raspberry_pi_server
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=100 --statistics
+    - name: Check formatting with black
+      run: |
+        cd raspberry_pi_server
+        black --check .
+
+  python-tests:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+    - name: Install dependencies
+      run: |
+        cd raspberry_pi_server
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: Run tests
+      run: |
+        cd raspberry_pi_server
+        pytest tests/ --cov=raspberry_pi_server --cov-report=xml
+
+  arduino-build-check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Arduino CLI
+      run: |
+        curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
+        export PATH=$PATH:$HOME/bin
+        arduino-cli config init
+        arduino-cli core update-index
+        arduino-cli core install esp32:esp32
+    - name: Compile ESP32 firmware
+      run: |
+        export PATH=$PATH:$HOME/bin
+        cd esp32_firmware/station_A
+        arduino-cli compile --fqbn esp32:esp32:esp32 station_A.ino
+        cd ../station_B
+        arduino-cli compile --fqbn esp32:esp32:esp32 station_B.ino

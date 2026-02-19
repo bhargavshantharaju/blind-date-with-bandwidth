@@ -1,0 +1,28 @@
+# Demo Flow Diagram
+
+```
+Start Demo
+    ↓
+ESP32 Stations: Scanning (slow LED blink)
+    ↓
+User presses button → Random track ID generated
+    ↓
+MQTT publish: blinddate/lock
+    ↓
+Raspberry Pi receives → Matcher updates state
+    ↓
+Both stations locked on same track?
+    ├── Yes → MATCH!
+    │       ↓
+    │   Stop music → Play success.wav
+    │       ↓
+    │   Start audio bridge (mic A ↔ headphones B)
+    │       ↓
+    │   Dashboard: Show countdown, confetti
+    │       ↓
+    │   After 90s → Timeout → Reset
+    │
+    └── No → MISMATCH → Continue scanning
+```
+
+This ASCII diagram shows the complete demo flow from user interaction to system reset.
