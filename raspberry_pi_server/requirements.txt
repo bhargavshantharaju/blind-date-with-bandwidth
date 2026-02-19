@@ -1,0 +1,8 @@
+paho-mqtt
+flask
+pyaudio
+pygame
+wave
+threading
+json
+numpy
