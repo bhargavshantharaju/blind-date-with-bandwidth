@@ -1,0 +1,26 @@
+"""
+Mutation testing configuration for Blind Date.
+Run: mutmut run
+"""
+
+SKIP_CONSTANTS = True
+
+def should_mutate(context):
+    """Skip mutation for logging and config."""
+    if 'logger' in context.line:
+        return False
+    if 'DEBUG' in context.line or 'INFO' in context.line:
+        return False
+    if context.filename.endswith('config.py'):
+        return False
+    return True
+
+# Coverage targets:
+# - matcher.py: >80% mutation score
+# - tournament.py: >75% mutation score
+# - resilience.py: >70% mutation score (complex circuit breaker logic)
+# - DSP pipeline: >60% (numerical edge cases hard to test)
+
+# Run mutations: mutmut run raspberry_pi_server/ --paths-to-mutate raspberry_pi_server/
+# Generate HTML report: mutmut html
+# Kill timeout: 5 seconds per mutation
