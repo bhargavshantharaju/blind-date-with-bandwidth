@@ -29,13 +29,11 @@ Blind Date with Bandwidth is an interactive communication systems demonstration 
 2. On Raspberry Pi: `./start_demo.sh`
 3. Open dashboard at http://pi_ip:5000
 
-## Demo Video
 
-[Placeholder for demo video link]
 
 ## Contributors
 
-- [Your Name] - Lead Developer
+- [BHARGAV S RAJ] - Lead Developer
 
 To collaborate: fork repo or request access.
 
