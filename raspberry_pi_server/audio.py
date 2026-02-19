@@ -1,137 +1,110 @@
-import pyaudio
-import wave
+import sounddevice as sd
+import numpy as np
 import threading
 import time
-import alsaaudio
+import wave
+import os
+from typing import Optional
 
 class AudioHandler:
-    def __init__(self):
-        self.p = pyaudio.PyAudio()
+    """Handles audio playback and bridging using sounddevice."""
+
+    def __init__(self, config: dict):
+        self.config = config
         self.chunk = 1024
-        self.format = pyaudio.paInt16
-        self.channels = 1
         self.rate = 44100
-
-        self.device_a_out = None
-        self.device_a_in = None
-        self.device_b_out = None
-        self.device_b_in = None
-        self._discover_devices()
-
-        self.streams = {}
+        self.channels = 1
         self.bridging = False
+        self.streams: dict = {}
+        self._generate_clips()
 
-    def _discover_devices(self):
-        usb_devices = []
-        for i in range(self.p.get_device_count()):
-            info = self.p.get_device_info_by_index(i)
-            name = info.get('name', '').lower()
-            if 'usb' in name and (info.get('maxInputChannels', 0) > 0 or info.get('maxOutputChannels', 0) > 0):
-                usb_devices.append(i)
-        if len(usb_devices) < 2:
-            raise RuntimeError(f"Need at least 2 USB audio devices, found {len(usb_devices)}")
-        self.device_a_in = self.device_a_out = usb_devices[0]
-        self.device_b_in = self.device_b_out = usb_devices[1]
-        print(f"Station A: Device {usb_devices[0]}")
-        print(f"Station B: Device {usb_devices[1]}")
+    def _generate_clips(self):
+        """Generate tone clips if not present."""
+        clip_dir = 'audio_clips'
+        os.makedirs(clip_dir, exist_ok=True)
+        frequencies = [300, 400, 500, 600, 700]
+        for i, freq in enumerate(frequencies, 1):
+            path = os.path.join(clip_dir, f'track{i}.wav')
+            if not os.path.exists(path):
+                self._generate_tone(path, 10, freq)
 
-    def list_devices(self):
-        info = self.p.get_host_api_info_by_index(0)
-        numdevices = info.get('deviceCount')
-        for i in range(0, numdevices):
-            if (self.p.get_device_info_by_host_api_device_index(0, i).get('maxInputChannels')) > 0:
-                print("Input Device id ", i, " - ", self.p.get_device_info_by_host_api_device_index(0, i).get('name'))
-            if (self.p.get_device_info_by_host_api_device_index(0, i).get('maxOutputChannels')) > 0:
-                print("Output Device id ", i, " - ", self.p.get_device_info_by_host_api_device_index(0, i).get('name'))
+        success_path = os.path.join(clip_dir, 'success.wav')
+        if not os.path.exists(success_path):
+            self._generate_tone(success_path, 0.5, 1000)
 
-    def play_wav(self, filename, device_index):
+    def _generate_tone(self, filename: str, duration: float, frequency: float):
+        """Generate a WAV tone file."""
+        t = np.linspace(0, duration, int(self.rate * duration), False)
+        tone = np.sin(frequency * 2 * np.pi * t)
+        # Fade
+        fade_len = int(self.rate * 0.01)
+        tone[:fade_len] = tone[:fade_len] * np.linspace(0, 1, fade_len)
+        tone[-fade_len:] = tone[-fade_len:] * np.linspace(1, 0, fade_len)
+        tone = np.int16(tone * 32767)
+        with wave.open(filename, 'w') as wav_file:
+            wav_file.setnchannels(self.channels)
+            wav_file.setsampwidth(2)
+            wav_file.setframerate(self.rate)
+            wav_file.writeframes(tone.tobytes())
+
+    def play_wav(self, filename: str, device: int):
+        """Play WAV file on specified device."""
         try:
-            wf = wave.open(filename, 'rb')
-            stream = self.p.open(format=self.p.get_format_from_width(wf.getsampwidth()),
-                                 channels=wf.getnchannels(),
-                                 rate=wf.getframerate(),
-                                 output=True,
-                                 output_device_index=device_index)
-            data = wf.readframes(self.chunk)
-            while data:
-                stream.write(data)
-                data = wf.readframes(self.chunk)
-            stream.stop_stream()
-            stream.close()
-            wf.close()
+            with wave.open(filename, 'rb') as wf:
+                data = wf.readframes(wf.getnframes())
+                sd.play(np.frombuffer(data, dtype=np.int16), samplerate=wf.getframerate(), device=device)
+                sd.wait()
         except Exception as e:
             print(f"Error playing {filename}: {e}")
 
     def start_bridging(self):
+        """Start audio bridging between stations."""
         if self.bridging:
             return
         self.bridging = True
+        try:
+            self.stream_a_in = sd.InputStream(device=self.config['audio']['device_a'], channels=self.channels, samplerate=self.rate, blocksize=self.chunk)
+            self.stream_b_in = sd.InputStream(device=self.config['audio']['device_b'], channels=self.channels, samplerate=self.rate, blocksize=self.chunk)
+            self.stream_a_out = sd.OutputStream(device=self.config['audio']['device_a'], channels=self.channels, samplerate=self.rate, blocksize=self.chunk)
+            self.stream_b_out = sd.OutputStream(device=self.config['audio']['device_b'], channels=self.channels, samplerate=self.rate, blocksize=self.chunk)
 
-        # Input streams
-        self.stream_a_in = self.p.open(format=self.format,
-                                       channels=self.channels,
-                                       rate=self.rate,
-                                       input=True,
-                                       input_device_index=self.device_a_in,
-                                       frames_per_buffer=self.chunk)
-        self.stream_b_in = self.p.open(format=self.format,
-                                       channels=self.channels,
-                                       rate=self.rate,
-                                       input=True,
-                                       input_device_index=self.device_b_in,
-                                       frames_per_buffer=self.chunk)
+            self.stream_a_in.start()
+            self.stream_b_in.start()
+            self.stream_a_out.start()
+            self.stream_b_out.start()
 
-        # Output streams
-        self.stream_a_out = self.p.open(format=self.format,
-                                        channels=self.channels,
-                                        rate=self.rate,
-                                        output=True,
-                                        output_device_index=self.device_a_out,
-                                        frames_per_buffer=self.chunk)
-        self.stream_b_out = self.p.open(format=self.format,
-                                        channels=self.channels,
-                                        rate=self.rate,
-                                        output=True,
-                                        output_device_index=self.device_b_out,
-                                        frames_per_buffer=self.chunk)
+            threading.Thread(target=self._bridge_a_to_b, daemon=True).start()
+            threading.Thread(target=self._bridge_b_to_a, daemon=True).start()
+        except Exception as e:
+            print(f"Bridging start error: {e}")
+            self.bridging = False
 
-        # Start threads
-        threading.Thread(target=self.bridge_a_to_b, daemon=True).start()
-        threading.Thread(target=self.bridge_b_to_a, daemon=True).start()
-
-    def bridge_a_to_b(self):
+    def _bridge_a_to_b(self):
         while self.bridging:
             try:
-                data = self.stream_a_in.read(self.chunk)
+                data, _ = self.stream_a_in.read(self.chunk)
                 self.stream_b_out.write(data)
             except Exception as e:
-                print(f"Error in A to B: {e}")
+                print(f"A to B error: {e}")
                 break
 
-    def bridge_b_to_a(self):
+    def _bridge_b_to_a(self):
         while self.bridging:
             try:
-                data = self.stream_b_in.read(self.chunk)
+                data, _ = self.stream_b_in.read(self.chunk)
                 self.stream_a_out.write(data)
             except Exception as e:
-                print(f"Error in B to A: {e}")
+                print(f"B to A error: {e}")
                 break
 
     def stop_bridging(self):
+        """Stop audio bridging."""
         self.bridging = False
-        time.sleep(0.1)  # Allow threads to stop
-        if hasattr(self, 'stream_a_in'):
-            self.stream_a_in.stop_stream()
-            self.stream_a_in.close()
-        if hasattr(self, 'stream_b_in'):
-            self.stream_b_in.stop_stream()
-            self.stream_b_in.close()
-        if hasattr(self, 'stream_a_out'):
-            self.stream_a_out.stop_stream()
-            self.stream_a_out.close()
-        if hasattr(self, 'stream_b_out'):
-            self.stream_b_out.stop_stream()
-            self.stream_b_out.close()
-
-    def __del__(self):
-        self.p.terminate()
+        time.sleep(0.1)
+        for stream in [self.stream_a_in, self.stream_b_in, self.stream_a_out, self.stream_b_out]:
+            if hasattr(self, stream.__name__ if hasattr(stream, '__name__') else 'stream'):
+                try:
+                    stream.stop()
+                    stream.close()
+                except:
+                    pass

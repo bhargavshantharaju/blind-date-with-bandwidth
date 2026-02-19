@@ -1,8 +1,9 @@
 paho-mqtt
 flask
-pyaudio
-pygame
-wave
-threading
-json
+flask-socketio
+python-socketio
+sounddevice
 numpy
+scipy
+pyyaml
+pytest
