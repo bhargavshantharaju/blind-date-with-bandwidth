@@ -66,6 +66,17 @@ def admin_config():
     # Placeholder for config update
     return jsonify({'status': 'config updated'})
 
+@app.route('/api/v1/admin/force-recover', methods=['POST'])
+@limiter.limit("10 per minute")
+def force_recover():
+    """Manually trigger state restoration from database."""
+    token = request.headers.get('Authorization', '').replace('Bearer ', '')
+    if not totp.verify(token):
+        return jsonify({'error': 'Invalid TOTP'}), 401
+    
+    # In a real implementation, restore state from database
+    return jsonify({'status': 'recovery_initiated'})
+
 @socketio.on('connect')
 def handle_connect():
     emit('status_update', state)
