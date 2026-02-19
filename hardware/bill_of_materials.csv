@@ -1,0 +1,11 @@
+Component,Quantity,Estimated Cost (USD),Notes
+ESP32 Dev Board,2,$5 each,Any 38-pin variant with WiFi
+Raspberry Pi 4 (2GB+),1,$45,Pi 3B+ also works
+USB Audio Interface,2,$8 each,UGREEN or similar with mic input
+Illuminated Push Button,2,$2 each,Momentary, 12mm, LED type
+Headphones with mic,2,$10 each,3.5mm TRRS connector
+5V 3A Power Supply,2,$6 each,For ESP32 stations
+MDF Booth Structure,1,$20,3D printable or laser cut
+Acrylic Panels,4,$15,For visibility
+WiFi Router,1,$30,Optional, for isolated network
+Total,,,$163
