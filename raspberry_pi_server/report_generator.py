@@ -3,6 +3,8 @@ Daily report generation template.
 Auto-generates YYYY-MM-DD_report.md in docs/reports/
 """
 
+from datetime import date, datetime, timedelta
+
 REPORT_TEMPLATE = """# Blind Date with Bandwidth - Daily Report
 ## {date}
 

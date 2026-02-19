@@ -3,14 +3,14 @@ Tournament mode: support for multi-station (up to 8) competitive bracket.
 Handles pairing, tournament progression, leaderboard.
 """
 
+import json
+import logging
+import random
 import threading
 import time
-import random
-import logging
-from enum import Enum
-from typing import Dict, List, Tuple, Optional
 from dataclasses import dataclass, field
-import json
+from enum import Enum
+from typing import Dict, List, Optional, Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +45,7 @@ class Leaderboard:
     station_id: str
     matches_played: int = 0
     matches_won: int = 0
-    fastest_sync_ms: int = float('inf')
+    fastest_sync_ms: float = float('inf')
     avg_sync_ms: float = 0.0
     total_sync_ms: int = 0
 

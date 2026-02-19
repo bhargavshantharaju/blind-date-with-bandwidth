@@ -1,9 +1,11 @@
-import paho.mqtt.client as mqtt
-import time
+import os
 import subprocess
 import sys
-import os
+import time
+
+import paho.mqtt.client as mqtt
 from audio import AudioHandler
+
 
 def check_mosquitto():
     try:
@@ -37,7 +39,10 @@ def test_mqtt():
 
 def test_audio_devices():
     try:
-        audio = AudioHandler()
+        audio = AudioHandler(config={
+            'audio': {'device_a': 1, 'device_b': 2},
+            'session': {'duration': 10, 'num_tracks': 5}
+        })
         return True
     except Exception as e:
         print(f"Audio device error: {e}")
@@ -45,7 +50,10 @@ def test_audio_devices():
 
 def test_play_success():
     try:
-        audio = AudioHandler()
+        audio = AudioHandler(config={
+            'audio': {'device_a': 1, 'device_b': 2},
+            'session': {'duration': 10, 'num_tracks': 5}
+        })
         audio.play_wav('audio/success.wav', audio.device_a_out)
         return True
     except Exception as e:
@@ -55,7 +63,10 @@ def test_play_success():
 def test_loopback():
     # Simple loopback: record and check if data is present
     try:
-        audio = AudioHandler()
+        audio = AudioHandler(config={
+            'audio': {'device_a': 1, 'device_b': 2},
+            'session': {'duration': 10, 'num_tracks': 5}
+        })
         stream_in = audio.p.open(format=audio.format, channels=audio.channels, rate=audio.rate,
                                  input=True, input_device_index=audio.device_a_in, frames_per_buffer=audio.chunk)
         data = stream_in.read(audio.chunk)

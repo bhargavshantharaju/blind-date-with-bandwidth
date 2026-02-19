@@ -4,10 +4,13 @@ Audio prebuffering, caching, database indexes.
 """
 
 import os
-import wave
-import numpy as np
-from functools import lru_cache
 import time
+import wave
+from functools import lru_cache
+from typing import Optional
+
+import numpy as np
+
 
 class AudioPreloader:
     """Preload all audio files into memory at startup."""
@@ -36,7 +39,7 @@ class AudioPreloader:
                 except Exception as e:
                     print(f"✗ Failed to preload {filename}: {e}")
     
-    def get_audio(self, track_id: int) -> dict:
+    def get_audio(self, track_id: int) -> Optional[dict]:
         """Retrieve preloaded audio."""
         filename = f"track_{track_id}.wav"
         return self.audio_cache.get(filename, None)

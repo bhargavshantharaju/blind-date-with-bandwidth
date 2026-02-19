@@ -3,14 +3,15 @@ Raspberry Pi server resilience layer.
 Implements circuit breaker, graceful degradation, connection pooling, crash recovery.
 """
 
-import threading
-import time
+import hashlib
+import json
 import logging
 import queue
-from enum import Enum
-from typing import Optional, Callable, Dict, Any
+import threading
+import time
 from datetime import datetime
-import json
+from enum import Enum
+from typing import Any, Callable, Dict, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -98,21 +99,21 @@ class MQTTMessageQueue:
 class AudioDeviceResilient:
     """Audio device with graceful degradation if primary fails."""
     
-    def __init__(self, device_id_a: int, device_b: int):
+    def __init__(self, device_id_a: int, device_id_b: int):
         self.device_a = device_id_a
         self.device_b = device_id_b
         self.fallback_device = None  # System speaker
         self.failed_device_a = False
         self.failed_device_b = False
     
-    def get_device_a(self) -> int:
+    def get_device_a(self) -> Optional[int]:
         """Get device A, fallback if failed."""
         if self.failed_device_a:
             logger.warning("Audio device A failed, using system speaker")
             return self.fallback_device
         return self.device_a
     
-    def get_device_b(self) -> int:
+    def get_device_b(self) -> Optional[int]:
         """Get device B, fallback if failed."""
         if self.failed_device_b:
             logger.warning("Audio device B failed, using system speaker")

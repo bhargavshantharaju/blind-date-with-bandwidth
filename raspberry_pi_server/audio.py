@@ -1,15 +1,25 @@
-import sounddevice as sd
-import numpy as np
+import os
 import threading
 import time
 import wave
-import os
 from typing import Optional
+
+import numpy as np
+import sounddevice as sd
+
 
 class AudioHandler:
     """Handles audio playback and bridging using sounddevice."""
 
-    def __init__(self, config: dict):
+    def __init__(self, config: dict = None):
+        if config is None:
+            config = {
+                'audio': {
+                    'device_a': 1,
+                    'device_b': 2,
+                },
+                'session': {'duration': 10, 'num_tracks': 5}
+            }
         self.config = config
         self.chunk = 1024
         self.rate = 44100
@@ -17,6 +27,15 @@ class AudioHandler:
         self.bridging = False
         self.session_active = False
         self.streams: dict = {}
+        
+        # Audio device attributes
+        self.device_a_out: int = int(config.get('audio', {}).get('device_a', 1))
+        self.device_a_in: int = int(config.get('audio', {}).get('device_a', 1))
+        self.device_b_out: int = int(config.get('audio', {}).get('device_b', 2))
+        self.device_b_in: int = int(config.get('audio', {}).get('device_b', 2))
+        self.format: int = 16  # 16-bit audio
+        self.p = None  # PyAudio interface (optional)
+        
         self._generate_clips()
 
     def _generate_clips(self):

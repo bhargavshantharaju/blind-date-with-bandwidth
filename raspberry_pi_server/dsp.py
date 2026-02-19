@@ -3,12 +3,13 @@ Digital Signal Processing module for audio quality enhancement.
 Implements noise gate, AGC, echo cancellation, and filtering.
 """
 
-import numpy as np
-from scipy import signal
-import threading
 import logging
+import threading
 from collections import deque
 from typing import Tuple
+
+import numpy as np
+from scipy import signal
 
 logger = logging.getLogger(__name__)
 
@@ -73,7 +74,7 @@ class EchoCanceller:
         self.delay_samples = int(delay_ms * sample_rate / 1000)
         self.filter_len = filter_len
         self.sample_rate = sample_rate
-        self.outgoing_buffer = deque(maxlen=delay_samples + filter_len)
+        self.outgoing_buffer = deque(maxlen=self.delay_samples + filter_len)
         self.weights = np.zeros(filter_len)
         self.step_size = 0.01
     

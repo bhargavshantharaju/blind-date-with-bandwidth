@@ -3,30 +3,32 @@ Integration tests for Blind Date with Bandwidth.
 Tests full flow: matching, timeout, recovery, etc.
 """
 
-import pytest
 import asyncio
-import time
 import json
+import time
 from datetime import datetime
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import MagicMock, Mock, patch
+
+import pytest
+
 
 @pytest.mark.asyncio
 async def test_full_match_flow():
     """Test complete match cycle end-to-end."""
-    from events import event_bus, create_event, EventType
-    from tournament import TournamentBracket
+    from events import EventType, create_event, event_bus
     from resilience import SessionRecovery
-    
+    from tournament import TournamentBracket
+
     # Setup
     events_received = []
     event_bus.subscribe(EventType.MATCHED, lambda e: events_received.append(e))
     
     bracket = TournamentBracket(num_stations=2)
-    bracket.start_round()
+    bracket.start_round(round_num=1)
     
     # Simulate both stations locking same track
     match_id = bracket.matches[0].match_id
-    winner = bracket.record_match_result(match_id, track_a=3, track_b=3, sync_time_ms=125)
+    winner = bracket.record_match_result(match_id, station_a_track=3, station_b_track=3, sync_time_ms=125)
     
     assert winner is not None
     assert len(events_received) > 0
@@ -34,7 +36,7 @@ async def test_full_match_flow():
 @pytest.mark.asyncio
 async def test_timeout_flow():
     """Test session timeout correctly broadcast."""
-    from events import event_bus, EventType
+    from events import EventType, event_bus
     
     events = []
     event_bus.subscribe(EventType.SESSION_TIMEOUT, lambda e: events.append(e))
@@ -51,18 +53,18 @@ async def test_mismatch_handling():
     from tournament import TournamentBracket
     
     bracket = TournamentBracket(num_stations=2)
-    bracket.start_round()
+    bracket.start_round(round_num=1)
     match_id = bracket.matches[0].match_id
     
     # Different tracks - no match
-    winner = bracket.record_match_result(match_id, track_a=1, track_b=2, sync_time_ms=50)
+    winner = bracket.record_match_result(match_id, station_a_track=1, station_b_track=2, sync_time_ms=50)
     
     assert winner is None
 
 @pytest.mark.asyncio
 async def test_mqtt_disconnect_recovery():
     """Test state recovery after MQTT disconnect."""
-    from resilience import SessionRecovery, CircuitBreaker
+    from resilience import CircuitBreaker, SessionRecovery
     
     cb = CircuitBreaker()
     recovery = SessionRecovery(lambda: None)
@@ -116,7 +118,7 @@ def test_leaderboard_ranking():
     from tournament import TournamentBracket
     
     bracket = TournamentBracket(num_stations=4)
-    bracket.start_round()
+    bracket.start_round(round_num=1)
     
     # Simulate some matches
     bracket.record_match_result('round_1_0', station_a_track=1, station_b_track=1, sync_time_ms=100)
