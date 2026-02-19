@@ -6,4 +6,4 @@ venv/
 .vscode/
 *.log
 audio/*.wav
-.DS_Store
+.DS_Store.cspell.json 
