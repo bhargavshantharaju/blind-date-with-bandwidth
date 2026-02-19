@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640" width="1280" height="640">
+  <!-- Background gradient -->
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0173B2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#05002B;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <rect width="1280" height="640" fill="url(#grad)"/>
+  
+  <!-- Left node (Station A) -->
+  <circle cx="200" cy="320" r="40" fill="#0173B2" filter="url(#glow)" opacity="0.8"/>
+  <circle cx="200" cy="320" r="35" fill="none" stroke="#DE8F05" stroke-width="2"/>
+  
+  <!-- Right node (Station B) -->
+  <circle cx="1080" cy="320" r="40" fill="#DE8F05" filter="url(#glow)" opacity="0.8"/>
+  <circle cx="1080" cy="320" r="35" fill="none" stroke="#0173B2" stroke-width="2"/>
+  
+  <!-- Connecting pulse line -->
+  <line x1="240" y1="320" x2="1040" y2="320" stroke="#2CAF42" stroke-width="3" opacity="0.6">
+    <animate attributeName="stroke-dashoffset" from="0" to="100" dur="2s" repeatCount="indefinite"/>
+  </line>
+  
+  <!-- Signal dots moving between nodes -->
+  <circle cx="400" cy="320" r="6" fill="#DE8F05" filter="url(#glow)">
+    <animate attributeName="cx" from="240" to="1040" dur="1.5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="900" cy="320" r="6" fill="#0173B2" filter="url(#glow)">
+    <animate attributeName="cx" from="1040" to="240" dur="1.5s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Center nodes (matching partners) -->
+  <circle cx="640" cy="200" r="30" fill="#2CAF42" filter="url(#glow)" opacity="0.7"/>
+  <circle cx="640" cy="440" r="30" fill="#2CAF42" filter="url(#glow)" opacity="0.7"/>
+  
+  <!-- Title -->
+  <text x="640" y="560" font-family="Arial, sans-serif" font-size="52" font-weight="bold" 
+        fill="#FFFFFF" text-anchor="middle" letter-spacing="2">
+    BLIND DATE WITH BANDWIDTH
+  </text>
+  
+  <!-- Subtitle -->
+  <text x="640" y="600" font-family="Arial, sans-serif" font-size="24" fill="#DE8F05" 
+        text-anchor="middle" opacity="0.9">
+    🎧 IEEE ComSoc Interactive Demo
+  </text>
+  
+  <!-- GitHub URL -->
+  <text x="640" y="630" font-family="monospace" font-size="16" fill="#CCCCCC" 
+        text-anchor="middle" opacity="0.8">
+    github.com/[your-org]/blind-date-with-bandwidth
+  </text>
+</svg>
