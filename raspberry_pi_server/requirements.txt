@@ -15,3 +15,10 @@ python-dotenv
 structlog
 sqlalchemy
 qrcode[pil]
+locust
+pytest-asyncio
+testcontainers
+testcontainers-postgres
+mutmut
+flask-babel
+weasyprint
