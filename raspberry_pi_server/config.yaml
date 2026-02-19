@@ -1,0 +1,14 @@
+mqtt:
+  broker: localhost
+  port: 1883
+
+audio:
+  device_a: 1
+  device_b: 2
+
+session:
+  duration: 90
+  num_tracks: 5
+
+debug: false
+admin_token: "changeme"
