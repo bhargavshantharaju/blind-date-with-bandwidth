@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blind Date with Bandwidth</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Blind Date with Bandwidth</h1>
+        <div class="stations">
+            <div class="station" id="station-a">
+                <h2>Station A</h2>
+                <div class="ring" id="ring-a"></div>
+                <p>State: <span id="state-a">idle</span></p>
+                <p>Track: <span id="track-a">0</span></p>
+            </div>
+            <div class="station" id="station-b">
+                <h2>Station B</h2>
+                <div class="ring" id="ring-b"></div>
+                <p>State: <span id="state-b">idle</span></p>
+                <p>Track: <span id="track-b">0</span></p>
+            </div>
+        </div>
+        <div class="sync-meter">
+            <div class="meter" id="sync-meter"></div>
+        </div>
+        <div class="stats">
+            <p>Sync Count: <span id="sync-count">0</span></p>
+            <p>Avg Sync Time: <span id="avg-time">0.00s</span></p>
+            <p>Countdown: <span id="countdown">0</span>s</p>
+        </div>
+        <div class="events">
+            <h3>Event Log</h3>
+            <ul id="event-list"></ul>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
