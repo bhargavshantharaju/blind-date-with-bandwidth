@@ -7,3 +7,11 @@ numpy
 scipy
 pyyaml
 pytest
+flask-talisman
+flask-limiter
+pyotp
+pydantic
+python-dotenv
+structlog
+sqlalchemy
+qrcode[pil]

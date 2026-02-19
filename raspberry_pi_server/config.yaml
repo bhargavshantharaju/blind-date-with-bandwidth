@@ -1,6 +1,7 @@
 mqtt:
   broker: localhost
-  port: 1883
+  port: 8883
+  ca_cert: /etc/blinddate/ca.crt
 
 audio:
   device_a: 1
@@ -11,4 +12,5 @@ session:
   num_tracks: 5
 
 debug: false
-admin_token: "changeme"
+backend: real
+haptic_mode: false

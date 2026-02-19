@@ -1,8 +1,12 @@
 #define STATION_ID "B"
 #include <WiFi.h>
+#include <WiFiClientSecure.h>
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
 #include <ArduinoOTA.h>
+#include <Adafruit_SSD1306.h>
+#include <Adafruit_GFX.h>
+#include <Wire.h>
 #include "../shared/config.h"
 
 // MQTT topics
@@ -10,8 +14,10 @@ const char* lock_topic = "blinddate/lock";
 const char* status_topic = "blinddate/status";
 const char* heartbeat_topic = "blinddate/heartbeat";
 
-WiFiClient espClient;
+WiFiClientSecure espClient;
 PubSubClient client(espClient);
+
+Adafruit_SSD1306 display(128, 64, &Wire, OLED_RESET);
 
 volatile bool buttonPressed = false;
 unsigned long lastDebounceTime = 0;
@@ -20,6 +26,8 @@ unsigned long lastWiFiReconnect = 0;
 unsigned long lastMQTTReconnect = 0;
 bool matched = false;
 int wifiReconnectAttempts = 0;
+int currentTrack = 0;
+unsigned long sessionStart = 0;
 
 // Debug logging
 #define LOG_INFO(msg) if (DEBUG_LEVEL >= 1) Serial.println("[INFO] " msg)
@@ -43,17 +51,46 @@ void updateLed() {
   switch (currentLedState) {
     case SCANNING:
       digitalWrite(LED_PIN, (now / 1000) % 2);  // Slow blink
+      digitalWrite(VIBRATION_PIN, LOW);
+      display.clearDisplay();
+      display.setCursor(0,0);
+      display.println("SCANNING...");
+      display.display();
       break;
     case LOCKED:
       digitalWrite(LED_PIN, (now / 250) % 2);   // Fast blink
+      digitalWrite(VIBRATION_PIN, HIGH);  // Vibrate when locked
+      display.clearDisplay();
+      display.setCursor(0,0);
+      display.println("LOCKED");
+      display.setCursor(0,20);
+      display.printf("Track: %d", currentTrack);
+      if (sessionStart > 0) {
+        int countdown = 30 - (now - sessionStart) / 1000;
+        if (countdown > 0) {
+          display.setCursor(0,40);
+          display.printf("Time: %d", countdown);
+        }
+      }
+      display.display();
       break;
     case CONNECTED:
       digitalWrite(LED_PIN, HIGH);              // Solid on
+      digitalWrite(VIBRATION_PIN, LOW);
+      display.clearDisplay();
+      display.setCursor(0,0);
+      display.println("SYNCED!");
+      display.display();
       break;
     case ERROR:
       // SOS pattern
       int pattern = (now / 150) % 19;
       digitalWrite(LED_PIN, (pattern < 3 || (pattern >= 6 && pattern < 9) || (pattern >= 12 && pattern < 15)));
+      digitalWrite(VIBRATION_PIN, (now / 500) % 2);  // Fast vibrate on error
+      display.clearDisplay();
+      display.setCursor(0,0);
+      display.println("ERROR");
+      display.display();
       break;
   }
 }
@@ -64,10 +101,25 @@ void setup() {
 
   pinMode(BUTTON_PIN, INPUT_PULLUP);
   pinMode(LED_PIN, OUTPUT);
+  pinMode(VIBRATION_PIN, OUTPUT);
   attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), buttonISR, FALLING);
+
+  // Initialize OLED
+  Wire.begin(OLED_SDA, OLED_SCL);
+  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
+    LOG_ERROR("SSD1306 allocation failed");
+    for(;;);
+  }
+  display.clearDisplay();
+  display.setTextSize(2);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(0,0);
+  display.println("SCANNING...");
+  display.display();
 
   setup_wifi();
   setup_ota();
+  espClient.setCACert(MQTT_CA_CERT);
   client.setServer(MQTT_BROKER_IP, MQTT_PORT);
   client.setCallback(callback);
 }
@@ -108,6 +160,11 @@ void callback(char* topic, byte* payload, unsigned int length) {
     deserializeJson(doc, message);
     if (doc["station"] == STATION_ID) {
       matched = doc["matched"];
+      if (matched) {
+        sessionStart = millis();
+      } else {
+        sessionStart = 0;
+      }
       setLedState(matched ? CONNECTED : SCANNING);
     }
   }
@@ -173,11 +230,11 @@ void loop() {
     if (currentTime - lastDebounceTime > DEBOUNCE_MS) {
       lastDebounceTime = currentTime;
       // Generate random track ID 1-5
-      int track = random(1, 6);
+      currentTrack = random(1, 6);
       // Publish JSON
       DynamicJsonDocument doc(1024);
       doc["station"] = STATION_ID;
-      doc["track"] = track;
+      doc["track"] = currentTrack;
       doc["timestamp"] = currentTime;
       String output;
       serializeJson(doc, output);

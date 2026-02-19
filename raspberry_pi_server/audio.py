@@ -15,6 +15,7 @@ class AudioHandler:
         self.rate = 44100
         self.channels = 1
         self.bridging = False
+        self.session_active = False
         self.streams: dict = {}
         self._generate_clips()
 
@@ -108,3 +109,28 @@ class AudioHandler:
                     stream.close()
                 except:
                     pass
+
+    def play_success_and_bridge(self):
+        """Play success sound and start bridging for session duration."""
+        self.session_active = True
+        success_path = os.path.join('audio_clips', 'success.wav')
+        threading.Thread(target=self.play_wav, args=(success_path, self.config['audio']['device_a']), daemon=True).start()
+        threading.Thread(target=self.play_wav, args=(success_path, self.config['audio']['device_b']), daemon=True).start()
+        time.sleep(0.5)  # Wait for success sound
+        self.start_bridging()
+        time.sleep(self.config['session']['duration'])
+        self.stop_bridging()
+        self.session_active = False
+
+    def play_tracks_loop(self):
+        """Loop playing tracks to stations."""
+        tracks = list(range(1, self.config['session']['num_tracks'] + 1))
+        while True:
+            for track in tracks:
+                if self.session_active:
+                    time.sleep(1)
+                    continue
+                track_path = os.path.join('audio_clips', f'track{track}.wav')
+                threading.Thread(target=self.play_wav, args=(track_path, self.config['audio']['device_a']), daemon=True).start()
+                threading.Thread(target=self.play_wav, args=(track_path, self.config['audio']['device_b']), daemon=True).start()
+                time.sleep(10)  # Track duration

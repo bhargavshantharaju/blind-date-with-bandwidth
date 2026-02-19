@@ -1,11 +1,26 @@
 from flask import Flask, render_template, jsonify, request
 from flask_socketio import SocketIO, emit
+from flask_talisman import Talisman
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+import pyotp
 import json
 import time
+import os
+from dotenv import load_dotenv
 from typing import Dict, Any
 
+load_dotenv()
+
 app = Flask(__name__)
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-secret-key')
 socketio = SocketIO(app, cors_allowed_origins="*")
+
+# Security
+talisman = Talisman(app, content_security_policy=None)  # Customize CSP as needed
+limiter = Limiter(app, key_func=get_remote_address)
+
+totp = pyotp.TOTP(os.getenv('TOTP_SECRET'))
 
 # Global state
 state: Dict[str, Any] = {
@@ -34,18 +49,20 @@ def get_stats():
     })
 
 @app.route('/admin/reset', methods=['POST'])
+@limiter.limit("10 per minute")
 def admin_reset():
-    token = request.headers.get('Authorization')
-    if token != f"Bearer {app.config.get('ADMIN_TOKEN', 'changeme')}":
-        return jsonify({'error': 'Unauthorized'}), 401
+    token = request.headers.get('X-TOTP')
+    if not token or not totp.verify(token):
+        return jsonify({'error': 'Invalid TOTP'}), 401
     reset_system()
     return jsonify({'status': 'reset'})
 
 @app.route('/admin/config', methods=['POST'])
+@limiter.limit("10 per minute")
 def admin_config():
-    token = request.headers.get('Authorization')
-    if token != f"Bearer {app.config.get('ADMIN_TOKEN', 'changeme')}":
-        return jsonify({'error': 'Unauthorized'}), 401
+    token = request.headers.get('X-TOTP')
+    if not token or not totp.verify(token):
+        return jsonify({'error': 'Invalid TOTP'}), 401
     # Placeholder for config update
     return jsonify({'status': 'config updated'})
 
