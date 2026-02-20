@@ -1,9 +1,14 @@
 {
   "python.defaultInterpreterPath": "${workspaceFolder}/venv/Scripts/python.exe",
   "python.linting.enabled": true,
-  "python.linting.pylintEnabled": false,
-  "python.linting.flake8Enabled": true,
-  "editor.formatOnSave": true,
-  "python.formatting.provider": "black",
-  "cSpell.enabled": true
+  "python.linting.flake8Enabled": false,
+  "editor.formatOnSave": false,
+  "cSpell.enabled": true,
+  "cSpell.diagnosticLevel": "Hint",
+  "cSpell.words": [
+    "mqtt", "MQTT", "paho", "blinddate", "dotenv",
+    "mosquitto", "NEOPIXEL", "Adafruit", "IRAM",
+    "sounddevice", "pyotp", "structlog", "locust",
+    "socketio", "PyYAML", "pytest", "asyncio"
+  ]
 }

@@ -27,7 +27,7 @@ def test_mqtt():
     received = {'received': False}
     client.on_connect = on_connect
     client.on_message = on_message
-    client.userdata_set(received)
+    client.user_data_set(received)
     try:
         client.connect("localhost", 1883, 5)
         client.loop_start()
