@@ -106,7 +106,9 @@ def test_circuit_breaker_exponential_backoff():
     delays = []
     for i in range(5):
         cb.record_failure()
-        delays.append(cb.next_retry_time - cb.last_failure_time)
+        assert cb.next_retry_time is not None
+        assert cb.last_failure_time is not None
+        delays.append(float(cb.next_retry_time) - float(cb.last_failure_time))
     
     # Verify exponential growth: 100ms, 200ms, 400ms, 800ms, 1600ms
     expected = [0.1, 0.2, 0.4, 0.8, 1.6]

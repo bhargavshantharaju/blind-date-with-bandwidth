@@ -6,11 +6,32 @@ import threading
 import time
 import os
 from dotenv import load_dotenv  # noqa: E402
+from pydantic import BaseModel
+from typing import Optional
 from mqtt_handler import MQTTHandler
 from matcher import Matcher
 from audio import AudioHandler
 from dashboard.app import app, socketio, update_state, add_event
-from models import validate_mqtt_payload
+
+class LockPayload(BaseModel):
+    station: str
+    track: int
+    timestamp: Optional[float] = None
+
+class HeartbeatPayload(BaseModel):
+    station: str
+    timestamp: Optional[float] = None
+
+def validate_mqtt_payload(topic: str, payload: dict) -> Optional[BaseModel]:
+    try:
+        if topic == 'blinddate/lock':
+            return LockPayload(**payload)
+        elif topic == 'blinddate/heartbeat':
+            return HeartbeatPayload(**payload)
+        return None
+    except Exception as e:
+        print(f"Rejected malformed payload on {topic}: {payload} - {e}")
+        return None
 
 load_dotenv()
 

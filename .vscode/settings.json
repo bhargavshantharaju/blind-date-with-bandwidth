@@ -10,5 +10,12 @@
     "mosquitto", "NEOPIXEL", "Adafruit", "IRAM",
     "sounddevice", "pyotp", "structlog", "locust",
     "socketio", "PyYAML", "pytest", "asyncio"
+  ],
+  "cSpell.ignorePaths": [
+    "venv",
+    "**/venv/**",
+    "node_modules",
+    ".git",
+    "**/__pycache__/**"
   ]
 }

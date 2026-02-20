@@ -109,11 +109,16 @@
   "flagWords": [],
   "ignorePaths": [
     "venv/**",
+    "**/venv/**",
     "node_modules/**",
-    "*.lock",
-    "*.min.js",
-    "*.min.css",
+    "**/node_modules/**",
+    "**/*.lock",
+    "**/*.min.js",
+    "**/*.min.css",
     "requirements.txt",
-    ".git/**"
+    ".git/**",
+    "**/__pycache__/**",
+    "**/*.pyc",
+    "**/*.egg-info/**"
   ]
 }

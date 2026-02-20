@@ -3,9 +3,19 @@
   "venv": "venv",
   "pythonVersion": "3.11",
   "typeCheckingMode": "basic",
+  "exclude": [
+    "venv/**",
+    "**/node_modules/**",
+    "**/__pycache__/**",
+    "**/*.pyc",
+    "**/.*",
+    "build/**",
+    "dist/**"
+  ],
   "reportMissingModuleSource": "none",
   "reportUnknownVariableType": "none",
   "reportUnknownMemberType": "none",
   "reportUnknownArgumentType": "none",
-  "exclude": ["venv/**", "**/node_modules/**"]
+  "reportUnknownParameterType": "none",
+  "reportMissingTypeArgument": "none"
 }
