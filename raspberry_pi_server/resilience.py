@@ -59,7 +59,7 @@ class CircuitBreaker:
             return True
         
         if self.state == CircuitBreakerState.OPEN:
-            if time.time() >= self.next_retry_time:
+            if self.next_retry_time is not None and time.time() >= self.next_retry_time:
                 self.state = CircuitBreakerState.HALF_OPEN
                 logger.info(f"CircuitBreaker '{self.name}': HALF_OPEN, testing recovery")
                 return True

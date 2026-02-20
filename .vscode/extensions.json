@@ -1,0 +1,20 @@
+{
+  "recommendations": [
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "ms-python.debugpy",
+    "ms-vscode.cpptools",
+    "platformio.platformio-ide",
+    "ms-vscode-remote.remote-containers",
+    "ms-vscode.makefile-tools",
+    "ms-vscode.cmake-tools",
+    "github.copilot",
+    "github.copilot-chat",
+    "eamodio.gitlens",
+    "ms-vscode.gitpod",
+    "streetsidesoftware.code-spell-checker",
+    "ms-vscode.live-server",
+    "mhutchie.git-graph",
+    "redhat.vscode-yaml"
+  ]
+}

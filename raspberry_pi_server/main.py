@@ -1,8 +1,11 @@
-import yaml
+try:
+    import yaml
+except ImportError:
+    raise ImportError("PyYAML required: pip install PyYAML")
 import threading
 import time
 import os
-from dotenv import load_dotenv
+from dotenv import load_dotenv  # noqa: E402
 from mqtt_handler import MQTTHandler
 from matcher import Matcher
 from audio import AudioHandler

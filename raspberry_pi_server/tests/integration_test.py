@@ -17,14 +17,14 @@ async def test_full_match_flow():
     """Test complete match cycle end-to-end."""
     from events import EventType, create_event, event_bus
     from resilience import SessionRecovery
-    from tournament import TournamentBracket
+    from tournament import TournamentBracket, TournamentRound
 
     # Setup
     events_received = []
     event_bus.subscribe(EventType.MATCHED, lambda e: events_received.append(e))
     
     bracket = TournamentBracket(num_stations=2)
-    bracket.start_round(round_num=1)
+    bracket.start_round(round_num=TournamentRound.ROUND_1)
     
     # Simulate both stations locking same track
     match_id = bracket.matches[0].match_id
@@ -50,10 +50,10 @@ async def test_timeout_flow():
 @pytest.mark.asyncio
 async def test_mismatch_handling():
     """Test mismatched tracks handled gracefully."""
-    from tournament import TournamentBracket
+    from tournament import TournamentBracket, TournamentRound
     
     bracket = TournamentBracket(num_stations=2)
-    bracket.start_round(round_num=1)
+    bracket.start_round(round_num=TournamentRound.ROUND_1)
     match_id = bracket.matches[0].match_id
     
     # Different tracks - no match
@@ -115,10 +115,10 @@ def test_circuit_breaker_exponential_backoff():
 
 def test_leaderboard_ranking():
     """Test tournament leaderboard calculations."""
-    from tournament import TournamentBracket
+    from tournament import TournamentBracket, TournamentRound
     
     bracket = TournamentBracket(num_stations=4)
-    bracket.start_round(round_num=1)
+    bracket.start_round(round_num=TournamentRound.ROUND_1)
     
     # Simulate some matches
     bracket.record_match_result('round_1_0', station_a_track=1, station_b_track=1, sync_time_ms=100)

@@ -16,11 +16,11 @@ logger = logging.getLogger(__name__)
 
 class TournamentRound(Enum):
     """Tournament rounds."""
-    QUALIFICATION = "qualification"
-    ROUND_1 = "round_1"
-    ROUND_2 = "round_2"
-    ROUND_3 = "round_3"
-    FINAL = "final"
+    ROUND_1 = 1
+    ROUND_2 = 2
+    ROUND_3 = 3
+    SEMIFINAL = 4
+    FINAL = 5
 
 
 @dataclass

@@ -1,0 +1,19 @@
+{
+  "words": [
+    "dotenv",
+    "mqtt",
+    "MQTT",
+    "blinddate",
+    "paho",
+    "socketio",
+    "PyYAML",
+    "locust",
+    "pytest",
+    "asyncio",
+    "pyotp",
+    "structlog",
+    "sounddevice",
+    "scipy",
+    "numpy"
+  ]
+}

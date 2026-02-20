@@ -1,0 +1,42 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Flask Dashboard",
+      "type": "python",
+      "request": "launch",
+      "module": "flask",
+      "env": {
+        "FLASK_APP": "raspberry_pi_server/dashboard/app.py",
+        "FLASK_ENV": "development"
+      },
+      "args": ["run", "--host=0.0.0.0", "--port=5000"],
+      "jinja": true,
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Pytest - Current File",
+      "type": "python",
+      "request": "launch",
+      "module": "pytest",
+      "args": ["${file}", "-v", "--asyncio-mode=auto"],
+      "cwd": "${workspaceFolder}/raspberry_pi_server"
+    },
+    {
+      "name": "Pytest - All Tests",
+      "type": "python",
+      "request": "launch",
+      "module": "pytest",
+      "args": ["tests/", "-v", "--cov=.", "--asyncio-mode=auto"],
+      "cwd": "${workspaceFolder}/raspberry_pi_server"
+    },
+    {
+      "name": "Locust Load Test",
+      "type": "python",
+      "request": "launch",
+      "module": "locust",
+      "args": ["-f", "tests/load_test.py", "-u", "10", "-r", "2", "http://localhost:5000"],
+      "cwd": "${workspaceFolder}/raspberry_pi_server"
+    }
+  ]
+}

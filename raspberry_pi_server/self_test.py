@@ -67,15 +67,18 @@ def test_loopback():
             'audio': {'device_a': 1, 'device_b': 2},
             'session': {'duration': 10, 'num_tracks': 5}
         })
-        stream_in = audio.p.open(format=audio.format, channels=audio.channels, rate=audio.rate,
-                                 input=True, input_device_index=audio.device_a_in, frames_per_buffer=audio.chunk)
-        data = stream_in.read(audio.chunk)
-        stream_in.stop_stream()
-        stream_in.close()
-        # Check if data has non-zero values
-        import struct
-        samples = struct.unpack('<' + 'h' * audio.chunk, data)
-        return max(samples) > 100  # Some threshold
+        if audio.p is not None:
+            stream_in = audio.p.open(format=audio.format, channels=audio.channels, rate=audio.rate,
+                                     input=True, input_device_index=audio.device_a_in, frames_per_buffer=audio.chunk)
+            data = stream_in.read(audio.chunk)
+            stream_in.stop_stream()
+            stream_in.close()
+            # Check if data has non-zero values
+            import struct
+            samples = struct.unpack('<' + 'h' * audio.chunk, data)
+            return max(samples) > 100  # Some threshold
+        else:
+            return False
     except Exception as e:
         print(f"Loopback test error: {e}")
         return False
