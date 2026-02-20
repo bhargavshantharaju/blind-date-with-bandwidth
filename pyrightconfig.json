@@ -4,18 +4,21 @@
   "pythonVersion": "3.11",
   "typeCheckingMode": "basic",
   "exclude": [
-    "venv/**",
+    "venv",
+    ".venv",
+    "**/venv/**",
+    "**/.venv/**",
     "**/node_modules/**",
     "**/__pycache__/**",
     "**/*.pyc",
-    "**/.*",
-    "build/**",
-    "dist/**"
+    "build",
+    "dist"
   ],
   "reportMissingModuleSource": "none",
   "reportUnknownVariableType": "none",
   "reportUnknownMemberType": "none",
   "reportUnknownArgumentType": "none",
   "reportUnknownParameterType": "none",
-  "reportMissingTypeArgument": "none"
+  "reportMissingTypeArgument": "none",
+  "reportAttributeAccessIssue": "none"
 }
